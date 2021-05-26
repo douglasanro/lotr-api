@@ -1,0 +1,37 @@
+version: '3.7'
+
+services:
+  app:
+    container_name: lotr-api
+    build:
+      context: .
+      target: development
+    image: lotr-api:latest
+    user: '${UID}:${GID}'
+    ports:
+      - 8080:8080
+    command: yarn run start:dev
+    env_file:
+      - .env
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    links:
+      - database
+    depends_on:
+      - database
+
+  database:
+    container_name: lotr-db
+    image: mongo:4.4.6
+    environment:
+      - MONGODB_DATABASE="lotr"
+    ports:
+      - 27017:27017
+    volumes:
+      - dbdata/:/data/db
+    logging:
+      driver: none
+
+volumes:
+  dbdata:
